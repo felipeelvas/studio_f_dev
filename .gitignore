@@ -1,0 +1,30 @@
+# Credenciais e configuração local
+.env
+.env.*
+!.env.example
+*.jks
+*.keystore
+key.properties
+
+# Flutter/Dart
+**/.dart_tool/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/build/
+**/android/local.properties
+**/ios/Pods/
+**/ios/.symlinks/
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/flutter_export_environment.sh
+
+# Java
+**/target/
+**/.gradle/
+*.class
+
+# Editor e sistema
+.idea/
+*.iml
+.DS_Store
+Thumbs.db
+*.log
