@@ -106,4 +106,24 @@ class ClienteService {
 
     return Cliente.fromJson(dados);
   }
+
+  Future<void> excluirCliente(int id) async {
+    final host = !kIsWeb && defaultTargetPlatform == TargetPlatform.android
+        ? '10.0.2.2'
+        : 'localhost';
+
+    final url = Uri.parse('http://$host:8080/clientes/$id');
+
+    final resposta = await http
+        .delete(url)
+        .timeout(const Duration(seconds: 10));
+
+    if (resposta.statusCode == 404) {
+      throw Exception('Cliente não encontrado.');
+    }
+
+    if (resposta.statusCode != 204) {
+      throw Exception('Não foi possível excluir o cliente.');
+    }
+  }
 }

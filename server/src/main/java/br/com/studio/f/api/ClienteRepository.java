@@ -59,4 +59,15 @@ public class ClienteRepository {
 
         return linhasAlteradas == 1;
     }
+
+    public boolean excluir(Long id) {
+    String sql = """
+        DELETE FROM clientes
+        WHERE id = ?
+        """;
+
+    int linhasExcluidas = jdbc.update(sql, id);
+
+    return linhasExcluidas == 1;
+    }
 }

@@ -5,21 +5,24 @@ import java.util.List;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
+
 
 @CrossOrigin(originPatterns = "http://localhost:*", methods = {
         RequestMethod.GET,
         RequestMethod.POST,
-        RequestMethod.PUT
-})
+        RequestMethod.PUT,
+        RequestMethod.DELETE
+}, allowedHeaders = "*")
 
 @RestController
 public class ClientesController {
@@ -105,4 +108,17 @@ public class ClientesController {
                     "Já existe um cliente com esse telefone.");
         }
     }
+
+    @DeleteMapping("/clientes/{id}")
+        @ResponseStatus(HttpStatus.NO_CONTENT)
+        public void excluirCliente(@PathVariable("id") Long id) {
+            boolean excluido = repository.excluir(id);
+
+            if (!excluido) {
+                throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Cliente não encontrado."
+                );
+            }
+        }
 }

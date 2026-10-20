@@ -142,6 +142,70 @@ class _ClientesPageState extends State<ClientesPage> {
     }
   }
 
+  Future<void> _excluirCliente(Cliente cliente) async {
+    final id = cliente.id;
+
+    if (_carregando || id == null) return;
+
+    final confirmar = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Excluir cliente?'),
+        content: Text(
+          'Deseja excluir ${cliente.nome}? '
+          'Esta ação não pode ser desfeita.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Excluir'),
+          ),
+        ],
+      ),
+    );
+
+    if (!mounted || confirmar != true || _carregando) return;
+
+    setState(() {
+      _carregando = true;
+      _erro = null;
+    });
+
+    try {
+      await _service.excluirCliente(id);
+
+      if (!mounted) return;
+
+      setState(() {
+        _clientes.removeWhere((item) => item.id == id);
+      });
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Cliente excluído.')));
+    } catch (erro) {
+      if (!mounted) return;
+
+      final mensagem = erro is Exception
+          ? erro.toString().replaceFirst('Exception: ', '')
+          : 'Não foi possível excluir o cliente.';
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(mensagem)));
+    } finally {
+      if (mounted) {
+        setState(() {
+          _carregando = false;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -169,8 +233,26 @@ class _ClientesPageState extends State<ClientesPage> {
                   leading: const Icon(Icons.person),
                   title: Text(cliente.nome),
                   subtitle: Text(cliente.telefone),
-                  trailing: const Icon(Icons.edit),
                   onTap: _carregando ? null : () => _editarCliente(cliente),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        tooltip: 'Editar cliente',
+                        icon: const Icon(Icons.edit),
+                        onPressed: _carregando
+                            ? null
+                            : () => _editarCliente(cliente),
+                      ),
+                      IconButton(
+                        tooltip: 'Excluir cliente',
+                        icon: const Icon(Icons.delete_outline),
+                        onPressed: _carregando
+                            ? null
+                            : () => _excluirCliente(cliente),
+                      ),
+                    ],
+                  ),
                 );
               },
             ),

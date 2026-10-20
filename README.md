@@ -4,7 +4,7 @@ Sistema de gestão de salão desenvolvido por etapas para praticar Flutter/Dart,
 
 ## Estado atual
 
-O módulo de clientes permite cadastrar, consultar e editar registros com persistência no PostgreSQL.
+O módulo de clientes permite cadastrar, consultar, editar e excluir registros com persistência no PostgreSQL (CRUD completo).
 
 **Flutter → API HTTP Java/Spring Boot → PostgreSQL**
 
@@ -16,7 +16,8 @@ O módulo de clientes permite cadastrar, consultar e editar registros com persis
 - [x] Formulário reutilizável para cadastro e edição.
 - [x] Nome e telefone obrigatórios e normalização do telefone para dígitos.
 - [x] API Spring Boot com endereço de status.
-- [x] Integração Flutter/API usando GET, POST e PUT.
+- [x] Integração Flutter/API usando GET, POST, PUT e DELETE.
+- [x] Exclusão por id com confirmação e opção de cancelar no aplicativo.
 - [x] Configuração de acesso local pelo navegador e emulador Android.
 - [x] Banco studio_f_dev e tabela clientes criados no pgAdmin.
 - [x] Consultas SQL parametrizadas com JdbcTemplate.
@@ -27,7 +28,7 @@ O módulo de clientes permite cadastrar, consultar e editar registros com persis
 
 ### Verificações realizadas
 
-Testes manuais confirmaram cadastro e edição pelo emulador Android, consulta pela API e pelo pgAdmin, bloqueio de campos vazios e telefones repetidos e permanência dos dados após reiniciar o Java. A primeira consulta integrada também foi testada no navegador.
+Testes manuais confirmaram cadastro e edição pelo emulador Android, consulta pela API e pelo pgAdmin, bloqueio de campos vazios e telefones repetidos e permanência dos dados após reiniciar o Java. A exclusão de um cliente de teste foi confirmada por consultas SQL no psql: o registro foi removido e os demais permaneceram. A primeira consulta integrada também foi testada no navegador.
 
 Ainda não há uma suíte automatizada validando esse fluxo. A execução em iOS e a distribuição nas lojas não foram verificadas.
 
@@ -55,8 +56,9 @@ Ainda não há uma suíte automatizada validando esse fluxo. A execução em iOS
 | GET | /clientes | Lista id, nome e telefone dos clientes. |
 | POST | /clientes | Cadastra cliente; resposta 201. |
 | PUT | /clientes/{id} | Atualiza cliente pelo id; resposta 200. |
+| DELETE | /clientes/{id} | Exclui cliente pelo id; resposta 204, sem corpo. |
 
-Cadastro e edição recebem JSON com nome e telefone. A API responde 400 para dados inválidos, 404 para edição de cliente inexistente e 409 para telefone repetido.
+Cadastro e edição recebem JSON com nome e telefone. A API responde 400 para dados inválidos, 404 para edição ou exclusão de cliente inexistente e 409 para telefone repetido.
 
 ## Executar localmente
 
@@ -106,11 +108,10 @@ flutter run -d chrome
 
 Para Android, inicie um emulador, consulte `flutter devices` e execute `flutter run -d ID_DO_EMULADOR`, substituindo o identificador pelo dispositivo listado.
 
-O serviço usa localhost:8080 no navegador e 10.0.2.2:8080 no Android, configuração destinada ao emulador. Aparelhos físicos precisam de configuração própria. O manifesto de debug permite HTTP local e a API permite CORS de http://localhost:* para GET, POST e PUT. Essas configurações são de desenvolvimento.
+O serviço usa localhost:8080 no navegador e 10.0.2.2:8080 no Android, configuração destinada ao emulador. Aparelhos físicos precisam de configuração própria. O manifesto de debug permite HTTP local e a API permite CORS de http://localhost:* para GET, POST, PUT e DELETE. Essas configurações são de desenvolvimento.
 
 ## Próximas etapas
 
-- [ ] Implementar exclusão por id no repositório e endpoint DELETE, com confirmação no Flutter.
 - [ ] Preservar os dados digitados no formulário quando o servidor rejeitar uma operação.
 - [ ] Versionar migrações SQL e ampliar a documentação de aprendizado.
 - [ ] Criar testes automatizados do fluxo de clientes.
