@@ -4,7 +4,7 @@ Sistema de gestão de salão desenvolvido por etapas para praticar Flutter/Dart,
 
 ## Estado atual
 
-O módulo de clientes permite cadastrar, consultar, editar e excluir registros com persistência no PostgreSQL (CRUD completo).
+O módulo de clientes permite cadastrar, consultar, editar e excluir registros com persistência no PostgreSQL (CRUD completo), além de buscar por nome ou telefone na lista carregada.
 
 **Flutter → API HTTP Java/Spring Boot → PostgreSQL**
 
@@ -13,6 +13,8 @@ O módulo de clientes permite cadastrar, consultar, editar e excluir registros c
 - [x] Preparação das ferramentas e organização do projeto.
 - [x] Home Flutter e navegação para a lista de clientes.
 - [x] Lista com ListView.builder, carregamento e mensagens de erro.
+- [x] Busca por trecho do nome ou telefone, atualizada conforme a digitação.
+- [x] Mensagens distintas para lista sem cadastros e busca sem resultados.
 - [x] Formulário reutilizável para cadastro e edição.
 - [x] Formulário preserva os dados após erro da API e fecha somente após salvar com sucesso.
 - [x] Botão e campos desabilitados durante o salvamento para evitar envios repetidos.
@@ -29,6 +31,8 @@ O módulo de clientes permite cadastrar, consultar, editar e excluir registros c
 - [x] Primeiro commit publicado no GitHub.
 
 ### Verificações realizadas
+
+A busca foi testada manualmente pelo desenvolvedor: trecho do nome, trecho do telefone, termo sem correspondência e retorno à lista completa ao apagar o texto.
 
 O fluxo de preservação do formulário após erro e correção para novo envio foi testado manualmente com sucesso pelo desenvolvedor. O salvamento ocorre no formulário; a lista recebe o cliente já salvo, sem repetir a requisição.
 
@@ -53,6 +57,8 @@ Ainda não há uma suíte automatizada validando esse fluxo. A execução em iOS
 | docs/ | Roteiro de aprendizado e resenha dos conceitos estudados. |
 
 ## API
+
+A busca atual é feita no Flutter sobre os clientes já carregados. Não envia novas consultas à API a cada tecla nem faz paginação no servidor. A comparação de nomes ignora maiúsculas e minúsculas; na busca por telefone, caracteres que não são dígitos são removidos.
 
 | Método | Endereço | Função |
 | --- | --- | --- |

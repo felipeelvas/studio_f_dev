@@ -17,6 +17,26 @@ class _ClientesPageState extends State<ClientesPage> {
 
   bool _carregando = true;
   String? _erro;
+  String _busca = '';
+
+  List<Cliente> get _clientesFiltrados {
+    final termo = _busca.trim().toLowerCase();
+    final telefoneBuscado = termo.replaceAll(RegExp(r'[^0-9]'), '');
+
+    if (termo.isEmpty) {
+      return _clientes;
+    }
+
+    return _clientes.where((cliente) {
+      final nomeEncontrado = cliente.nome.toLowerCase().contains(termo);
+
+      final telefoneEncontrado =
+          telefoneBuscado.isNotEmpty &&
+          cliente.telefone.contains(telefoneBuscado);
+
+      return nomeEncontrado || telefoneEncontrado;
+    }).toList();
+  }
 
   @override
   void initState() {
@@ -154,6 +174,7 @@ class _ClientesPageState extends State<ClientesPage> {
 
   @override
   Widget build(BuildContext context) {
+    final clientesExibidos = _clientesFiltrados;
     return Scaffold(
       appBar: AppBar(title: const Text('Clientes')),
       floatingActionButton: FloatingActionButton(
@@ -161,47 +182,72 @@ class _ClientesPageState extends State<ClientesPage> {
         tooltip: 'Novo cliente',
         child: const Icon(Icons.add),
       ),
-      body: _carregando
-          ? const Center(child: CircularProgressIndicator())
-          : _erro != null
-          ? Center(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Text(_erro!),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: TextField(
+              decoration: const InputDecoration(
+                labelText: 'Buscar por nome ou telefone',
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(),
               ),
-            )
-          : ListView.builder(
-              itemCount: _clientes.length,
-              itemBuilder: (context, index) {
-                final cliente = _clientes[index];
-
-                return ListTile(
-                  leading: const Icon(Icons.person),
-                  title: Text(cliente.nome),
-                  subtitle: Text(cliente.telefone),
-                  onTap: _carregando ? null : () => _editarCliente(cliente),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        tooltip: 'Editar cliente',
-                        icon: const Icon(Icons.edit),
-                        onPressed: _carregando
-                            ? null
-                            : () => _editarCliente(cliente),
-                      ),
-                      IconButton(
-                        tooltip: 'Excluir cliente',
-                        icon: const Icon(Icons.delete_outline),
-                        onPressed: _carregando
-                            ? null
-                            : () => _excluirCliente(cliente),
-                      ),
-                    ],
-                  ),
-                );
+              onChanged: (valor) {
+                setState(() {
+                  _busca = valor;
+                });
               },
             ),
+          ),
+          Expanded(
+            child: _carregando
+                ? const Center(child: CircularProgressIndicator())
+                : _erro != null
+                ? Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Text(_erro!),
+                    ),
+                  )
+                : clientesExibidos.isEmpty
+                ? Center(
+                    child: Text(
+                      _clientes.isEmpty
+                          ? 'Nenhum cliente cadastrado.'
+                          : 'Nenhum cliente encontrado.',
+                    ),
+                  )
+                : ListView.builder(
+                    itemCount: clientesExibidos.length,
+                    itemBuilder: (context, index) {
+                      final cliente = clientesExibidos[index];
+
+                      return ListTile(
+                        leading: const Icon(Icons.person),
+                        title: Text(cliente.nome),
+                        subtitle: Text(cliente.telefone),
+                        onTap: () => _editarCliente(cliente),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              tooltip: 'Editar cliente',
+                              icon: const Icon(Icons.edit),
+                              onPressed: () => _editarCliente(cliente),
+                            ),
+                            IconButton(
+                              tooltip: 'Excluir cliente',
+                              icon: const Icon(Icons.delete_outline),
+                              onPressed: () => _excluirCliente(cliente),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+          ),
+        ],
+      ),
     );
   }
 }
