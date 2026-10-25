@@ -1,8 +1,37 @@
 # Banco PostgreSQL
 
-Pasta reservada para a documentação e as migrações do banco de desenvolvimento.
+Documentação e scripts SQL do banco de desenvolvimento.
 
 Usar dados fictícios e configuração local. Nenhuma conexão com o banco do aplicativo publicado foi criada.
+
+## Estrutura versionada do banco
+
+O arquivo [001_criar_clientes.sql](migrations/001_criar_clientes.sql) contém a estrutura inicial da tabela `public.clientes`: id automático, nome obrigatório e não vazio, telefone obrigatório, numérico e único.
+
+O número `001` indica a ordem do script. Por enquanto, a execução é manual: o Spring Boot não aplica esses arquivos automaticamente e não há controle automático de quais scripts já foram executados.
+
+### Aplicar em um banco novo
+
+1. No pgAdmin, conectado ao PostgreSQL 18, crie um banco vazio, por exemplo `studio_f_teste`.
+2. Clique com o botão direito **nesse banco novo** e abra o Query Tool.
+3. Use Open File para abrir `database/migrations/001_criar_clientes.sql` e execute com F5.
+4. Consulte `SELECT * FROM public.clientes;`. O resultado deve ter as colunas id, nome e telefone, sem registros.
+
+Alternativamente, no PowerShell, a partir da raiz do projeto, com o banco novo já criado:
+
+```powershell
+& "C:\Program Files\PostgreSQL\18\bin\psql.exe" -h 127.0.0.1 -p 5432 -U postgres -d studio_f_teste -v ON_ERROR_STOP=1 --single-transaction -f .\database\migrations\001_criar_clientes.sql
+```
+
+Informe a senha quando solicitada. `ON_ERROR_STOP` interrompe a execução em caso de erro; `--single-transaction` aplica o arquivo como uma única transação.
+
+**Não execute esse script no `studio_f_dev` atual: a tabela já existe.** Não é necessário recriar a tabela para continuar usando o aplicativo. Se executado novamente no mesmo banco, o CREATE TABLE retorna erro de tabela existente. Não usamos `IF NOT EXISTS` para evitar esconder uma estrutura existente diferente da esperada.
+
+O script cria apenas a estrutura, não copia clientes. Depois de aplicar um script em um ambiente, preserve seu conteúdo e registre futuras mudanças em novos arquivos numerados. O banco de teste não é usado pelo aplicativo sem alterar sua configuração.
+
+### Validação realizada
+
+Execução manual confirmada pelo desenvolvedor no banco separado `studio_f_teste`. A consulta `SELECT * FROM public.clientes;` retornou as colunas `id`, `nome` e `telefone`, com zero registros. Essa verificação confirma a criação da estrutura; não substitui testes automatizados das restrições.
 
 ## Iniciar o ambiente de desenvolvimento
 

@@ -49,7 +49,7 @@ Ainda não há uma suíte automatizada validando esse fluxo. A execução em iOS
 | --- | --- |
 | app/ | Aplicativo Flutter; estrutura gerada para Android, iOS e web. |
 | server/ | API Java, validações e acesso ao banco. |
-| database/ | Espaço reservado para documentação e futuras migrações SQL. |
+| database/ | Scripts SQL numerados e instruções para preparar o banco. |
 | docs/ | Roteiro de aprendizado e resenha dos conceitos estudados. |
 
 ## API
@@ -67,6 +67,8 @@ Cadastro e edição recebem JSON com nome e telefone. A API responde 400 para da
 ## Executar localmente
 
 ### 1. Banco
+
+A estrutura inicial está versionada em [001_criar_clientes.sql](database/migrations/001_criar_clientes.sql). Sua execução manual foi validada no banco separado `studio_f_teste`, com a tabela vazia e as colunas esperadas. Consulte o [roteiro do banco](database/README.md) para aplicar o arquivo. O Spring Boot ainda não executa migrações automaticamente.
 
 Com PostgreSQL disponível em localhost:5432, crie o banco studio_f_dev. Abra o Query Tool nesse banco e execute uma vez:
 
@@ -116,7 +118,8 @@ O serviço usa localhost:8080 no navegador e 10.0.2.2:8080 no Android, configura
 
 ## Próximas etapas
 
-- [ ] Versionar migrações SQL e ampliar a documentação de aprendizado.
+- [x] Versionar o script inicial de clientes e validar sua execução em um banco de teste.
+- [ ] Automatizar o controle de migrações e ampliar a documentação de aprendizado.
 - [ ] Criar testes automatizados do fluxo de clientes.
 - [ ] Implementar autenticação e permissões de administrador e profissionais.
 - [ ] Adicionar serviços, categorias, pacotes e profissionais.
