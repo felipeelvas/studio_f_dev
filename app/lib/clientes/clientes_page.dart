@@ -45,6 +45,11 @@ class _ClientesPageState extends State<ClientesPage> {
   }
 
   Future<void> _carregarClientes() async {
+    setState(() {
+      _carregando = true;
+      _erro = null;
+    });
+
     try {
       final clientes = await _service.listarClientes();
 
@@ -53,18 +58,21 @@ class _ClientesPageState extends State<ClientesPage> {
       setState(() {
         _clientes.clear();
         _clientes.addAll(clientes);
-        _carregando = false;
-        _erro = null;
       });
     } catch (_) {
       if (!mounted) return;
 
       setState(() {
-        _carregando = false;
         _erro =
             'Não foi possível carregar os clientes. '
             'Confira se o servidor está funcionando.';
       });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _carregando = false;
+        });
+      }
     }
   }
 
@@ -176,7 +184,16 @@ class _ClientesPageState extends State<ClientesPage> {
   Widget build(BuildContext context) {
     final clientesExibidos = _clientesFiltrados;
     return Scaffold(
-      appBar: AppBar(title: const Text('Clientes')),
+      appBar: AppBar(
+        title: const Text('Clientes'),
+        actions: [
+          IconButton(
+            tooltip: 'Atualizar clientes',
+            onPressed: _carregando ? null : _carregarClientes,
+            icon: const Icon(Icons.refresh),
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: _abrirCadastro,
         tooltip: 'Novo cliente',
