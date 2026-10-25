@@ -14,6 +14,8 @@ O módulo de clientes permite cadastrar, consultar, editar e excluir registros c
 - [x] Home Flutter e navegação para a lista de clientes.
 - [x] Lista com ListView.builder, carregamento e mensagens de erro.
 - [x] Formulário reutilizável para cadastro e edição.
+- [x] Formulário preserva os dados após erro da API e fecha somente após salvar com sucesso.
+- [x] Botão e campos desabilitados durante o salvamento para evitar envios repetidos.
 - [x] Nome e telefone obrigatórios e normalização do telefone para dígitos.
 - [x] API Spring Boot com endereço de status.
 - [x] Integração Flutter/API usando GET, POST, PUT e DELETE.
@@ -27,6 +29,8 @@ O módulo de clientes permite cadastrar, consultar, editar e excluir registros c
 - [x] Primeiro commit publicado no GitHub.
 
 ### Verificações realizadas
+
+O fluxo de preservação do formulário após erro e correção para novo envio foi testado manualmente com sucesso pelo desenvolvedor. O salvamento ocorre no formulário; a lista recebe o cliente já salvo, sem repetir a requisição.
 
 Testes manuais confirmaram cadastro e edição pelo emulador Android, consulta pela API e pelo pgAdmin, bloqueio de campos vazios e telefones repetidos e permanência dos dados após reiniciar o Java. A exclusão de um cliente de teste foi confirmada por consultas SQL no psql: o registro foi removido e os demais permaneceram. A primeira consulta integrada também foi testada no navegador.
 
@@ -112,7 +116,6 @@ O serviço usa localhost:8080 no navegador e 10.0.2.2:8080 no Android, configura
 
 ## Próximas etapas
 
-- [ ] Preservar os dados digitados no formulário quando o servidor rejeitar uma operação.
 - [ ] Versionar migrações SQL e ampliar a documentação de aprendizado.
 - [ ] Criar testes automatizados do fluxo de clientes.
 - [ ] Implementar autenticação e permissões de administrador e profissionais.
