@@ -17,6 +17,7 @@ class _ClienteFormPageState extends State<ClienteFormPage> {
   late final TextEditingController _telefoneController;
   final _service = ClienteService();
   bool _salvando = false;
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -38,16 +39,10 @@ class _ClienteFormPageState extends State<ClienteFormPage> {
 
   Future<void> _salvar() async {
     if (_salvando) return;
+    if (!_formKey.currentState!.validate()) return;
 
     final nome = _nomeController.text.trim();
     final telefone = _telefoneController.text.replaceAll(RegExp(r'[^0-9]'), '');
-
-    if (nome.isEmpty || telefone.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Preencha nome e telefone.')),
-      );
-      return;
-    }
 
     final cliente = Cliente(
       id: widget.cliente?.id,
@@ -94,33 +89,66 @@ class _ClienteFormPageState extends State<ClienteFormPage> {
       appBar: AppBar(title: Text(editando ? 'Editar cliente' : 'Novo cliente')),
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: ListView(
-          children: [
-            TextFormField(
-              enabled: !_salvando,
-              controller: _nomeController,
-              decoration: const InputDecoration(
-                labelText: 'Nome',
-                border: OutlineInputBorder(),
+        child: Form(
+          key: _formKey,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          child: ListView(
+            children: [
+              TextFormField(
+                enabled: !_salvando,
+                controller: _nomeController,
+                decoration: const InputDecoration(
+                  labelText: 'Nome',
+                  border: OutlineInputBorder(),
+                ),
+                textCapitalization: TextCapitalization.words,
+                validator: (valor) {
+                  final nome = valor?.trim() ?? '';
+
+                  if (nome.isEmpty) {
+                    return 'Informe o nome.';
+                  }
+
+                  if (nome.length > 150) {
+                    return 'O nome deve ter no máximo 150 caracteres.';
+                  }
+
+                  return null;
+                },
               ),
-              textCapitalization: TextCapitalization.words,
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              enabled: !_salvando,
-              controller: _telefoneController,
-              decoration: const InputDecoration(
-                labelText: 'Telefone',
-                border: OutlineInputBorder(),
+              const SizedBox(height: 16),
+              TextFormField(
+                enabled: !_salvando,
+                controller: _telefoneController,
+                decoration: const InputDecoration(
+                  labelText: 'Telefone',
+                  border: OutlineInputBorder(),
+                ),
+                keyboardType: TextInputType.phone,
+                validator: (valor) {
+                  final telefone = (valor ?? '').replaceAll(
+                    RegExp(r'[^0-9]'),
+                    '',
+                  );
+
+                  if (telefone.isEmpty) {
+                    return 'Informe o telefone.';
+                  }
+
+                  if (telefone.length > 20) {
+                    return 'O telefone deve ter no máximo 20 dígitos.';
+                  }
+
+                  return null;
+                },
               ),
-              keyboardType: TextInputType.phone,
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: _salvando ? null : _salvar,
-              child: Text(_salvando ? 'Salvando...' : 'Salvar'),
-            ),
-          ],
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: _salvando ? null : _salvar,
+                child: Text(_salvando ? 'Salvando...' : 'Salvar'),
+              ),
+            ],
+          ),
         ),
       ),
     );
